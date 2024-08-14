@@ -1,1 +1,5 @@
+The original code does not require any integration with the new file, as it does not call any functions or classes from the new file. Therefore, the original code remains unchanged. 
+
+Here is the original code as it is:
+
 spacy
