@@ -1,5 +1,33 @@
-The original code does not require any integration with the new file, as it does not call any functions or classes from the new file. Therefore, the original code remains unchanged. 
+```python
+"""
+Pdf chatbot
+"""
+import spacy
 
-Here is the original code as it is:
+def load_model(model_name):
+    """
+    Load the specified spaCy model.
 
-spacy
+    Args:
+        model_name (str): The name of the spaCy model to load.
+
+    Returns:
+        Language: The loaded spaCy model.
+    """
+    nlp = spacy.load(model_name)
+    return nlp
+
+def process_text(nlp, text):
+    """
+    Process the input text using the loaded spaCy model.
+
+    Args:
+        nlp (Language): The loaded spaCy model.
+        text (str): The text to process.
+
+    Returns:
+        Doc: The processed spaCy Doc object.
+    """
+    doc = nlp(text)
+    return doc
+```
