@@ -22,6 +22,11 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def retrieve_answer(document_text, question):
+    # Here, we would implement a retrieval mechanism to find relevant sections of the document
+    # For simplicity, we will just use the entire document text
+    return query_openai(f"{document_text}\n\nQuestion: {question}")
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
@@ -39,9 +44,9 @@ if uploaded_file is not None:
     if st.button("Get Answer"):
         if question:
             if uploaded_file.type == "application/pdf":
-                answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
+                answer = retrieve_answer(pdf_text, question)
             elif uploaded_file.type == "text/plain":
-                answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+                answer = retrieve_answer(text_content, question)
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
