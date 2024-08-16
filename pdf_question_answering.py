@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+import requests
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -22,26 +23,34 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def upload_file_to_api(file):
+    url = "http://your-fastapi-endpoint/upload"  # Replace with your FastAPI endpoint
+    files = {'file': (file.name, file, file.type)}
+    response = requests.post(url, files=files)
+    return response.json()
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
 
 if uploaded_file is not None:
-    if uploaded_file.type == "application/pdf":
-        pdf_text = load_pdf(uploaded_file)
-        st.write("Document Content:", pdf_text)
-    elif uploaded_file.type == "text/plain":
-        text_content = load_text(uploaded_file)
-        st.write("Document Content:", text_content)
+    upload_response = upload_file_to_api(uploaded_file)
+    if upload_response.get("success"):
+        if uploaded_file.type == "application/pdf":
+            pdf_text = load_pdf(uploaded_file)
+            st.write("Document Content:", pdf_text)
+        elif uploaded_file.type == "text/plain":
+            text_content = load_text(uploaded_file)
+            st.write("Document Content:", text_content)
 
-    question = st.text_input("Ask a question about the document content:")
-    
-    if st.button("Get Answer"):
-        if question:
-            if uploaded_file.type == "application/pdf":
-                answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
-            elif uploaded_file.type == "text/plain":
-                answer = query_openai(f"{text_content}\n\nQuestion: {question}")
-            st.write("Answer:", answer)
-        else:
-            st.warning("Please enter a question.")
+        question = st.text_input("Ask a question about the document content:")
+        
+        if st.button("Get Answer"):
+            if question:
+                if uploaded_file.type == "application/pdf":
+                    answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
+                elif uploaded_file.type == "text/plain":
+                    answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+                st.write("Answer:", answer)
+            else:
+                st.warning("Please enter a question.")
