@@ -2,6 +2,10 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import HTMLResponse
+
+app = FastAPI()
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -45,3 +49,18 @@ if uploaded_file is not None:
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
+
+@app.post("/uploadfile/")
+async def upload_file(file: UploadFile = File(...)):
+    contents = await file.read()
+    return {"filename": file.filename, "content_type": file.content_type, "size": len(contents)}
+
+@app.get("/", response_class=HTMLResponse)
+async def main():
+    content = """
+    <form action="/uploadfile/" enctype="multipart/form-data" method="post">
+        <input name="file" type="file">
+        <input type="submit">
+    </form>
+    """
+    return content
