@@ -29,14 +29,12 @@ uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf
 if uploaded_file is not None:
     if uploaded_file.type == "application/pdf":
         pdf_text = load_pdf(uploaded_file)
-        st.sidebar.text_area("Document Content", pdf_text, height=300)
     elif uploaded_file.type == "text/plain":
         text_content = load_text(uploaded_file)
-        st.sidebar.text_area("Document Content", text_content, height=300)
 
-    question = st.sidebar.text_input("Ask a question about the document content:")
+    question = st.text_input("Ask a question about the document content:")
     
-    if st.sidebar.button("Get Answer"):
+    if st.button("Get Answer"):
         if question:
             if uploaded_file.type == "application/pdf":
                 answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
