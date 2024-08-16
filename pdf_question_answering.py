@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+import requests
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -22,6 +23,10 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def upload_file_to_endpoint(file):
+    response = requests.post("YOUR_ENDPOINT_URL", files={"file": file})
+    return response.json()
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
@@ -33,6 +38,10 @@ if uploaded_file is not None:
     elif uploaded_file.type == "text/plain":
         text_content = load_text(uploaded_file)
         st.write("Document Content:", text_content)
+
+    # Hit the endpoint after file upload
+    upload_response = upload_file_to_endpoint(uploaded_file)
+    st.write("Upload Response:", upload_response)
 
     question = st.text_input("Ask a question about the document content:")
     
