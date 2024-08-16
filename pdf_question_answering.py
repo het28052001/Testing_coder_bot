@@ -2,6 +2,9 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+from fastapi import FastAPI, UploadFile, File
+
+app = FastAPI()
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -21,6 +24,17 @@ def query_openai(prompt):
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message['content']
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile = File(...)):
+    if file.content_type == "application/pdf":
+        pdf_text = load_pdf(await file.read())
+        return {"content": pdf_text}
+    elif file.content_type == "text/plain":
+        text_content = load_text(await file.read())
+        return {"content": text_content}
+    else:
+        return {"error": "Invalid file type"}
 
 st.title("PDF and Text File Question Answering with OpenAI")
 
