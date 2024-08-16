@@ -1,3 +1,7 @@
+The original code does not require any changes to integrate the new Dockerfile since it is a separate configuration file for containerization and does not directly affect the existing code. Therefore, the original code remains unchanged. 
+
+Here is the original code as it is:
+
 streamlit
 langchain
 openai
