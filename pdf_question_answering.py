@@ -22,6 +22,11 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def retrieve_relevant_context(document, question):
+    # This function should implement the logic to retrieve relevant context from the document
+    # For now, we will just return the first 500 characters as a placeholder
+    return document[:500]
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
@@ -39,9 +44,11 @@ if uploaded_file is not None:
     if st.button("Get Answer"):
         if question:
             if uploaded_file.type == "application/pdf":
-                answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
+                context = retrieve_relevant_context(pdf_text, question)
+                answer = query_openai(f"{context}\n\nQuestion: {question}")
             elif uploaded_file.type == "text/plain":
-                answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+                context = retrieve_relevant_context(text_content, question)
+                answer = query_openai(f"{context}\n\nQuestion: {question}")
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
