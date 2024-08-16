@@ -29,8 +29,10 @@ uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf
 if uploaded_file is not None:
     if uploaded_file.type == "application/pdf":
         pdf_text = load_pdf(uploaded_file)
+        st.write("Document Content:", pdf_text)
     elif uploaded_file.type == "text/plain":
         text_content = load_text(uploaded_file)
+        st.write("Document Content:", text_content)
 
     question = st.text_input("Ask a question about the document content:")
     
