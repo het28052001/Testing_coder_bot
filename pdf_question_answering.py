@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+import requests
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -21,6 +22,17 @@ def query_openai(prompt):
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message['content']
+
+def github_api(access_token, username, github_url):
+    headers = {
+        'Authorization': f'token {access_token}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+    response = requests.get(github_url, headers=headers)
+    if response.status_code == 200:
+        return response.json(), 200
+    else:
+        return {'error': response.json()}, response.status_code
 
 st.title("PDF and Text File Question Answering with OpenAI")
 
@@ -45,3 +57,17 @@ if uploaded_file is not None:
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
+
+access_token = st.text_input("GitHub Access Token:")
+username = st.text_input("GitHub Username:")
+github_url = st.text_input("GitHub URL:")
+
+if st.button("Get GitHub Data"):
+    if access_token and username and github_url:
+        data, status_code = github_api(access_token, username, github_url)
+        if status_code == 200:
+            st.write("GitHub Data:", data)
+        else:
+            st.error(data['error'])
+    else:
+        st.warning("Please enter all GitHub details.")
