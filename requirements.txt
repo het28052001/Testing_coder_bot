@@ -1,0 +1,6 @@
+requirements.txt
+
+streamlit
+PyPDF2
+openai
+langchain
