@@ -22,6 +22,15 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def get_answer(uploaded_file, question):
+    if uploaded_file.type == "application/pdf":
+        pdf_text = load_pdf(uploaded_file)
+        answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
+    elif uploaded_file.type == "text/plain":
+        text_content = load_text(uploaded_file)
+        answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+    return answer
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
@@ -38,10 +47,7 @@ if uploaded_file is not None:
     
     if st.button("Get Answer"):
         if question:
-            if uploaded_file.type == "application/pdf":
-                answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
-            elif uploaded_file.type == "text/plain":
-                answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+            answer = get_answer(uploaded_file, question)
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
