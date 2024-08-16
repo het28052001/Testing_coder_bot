@@ -45,3 +45,10 @@ if uploaded_file is not None:
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
+
+# requirements.txt
+# streamlit
+# PyPDF2
+# openai
+# numpy
+# pandas
