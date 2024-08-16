@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+import httpx
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -21,6 +22,17 @@ def query_openai(prompt):
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message['content']
+
+async def validate_github(credentials):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            f"{credentials['github_url']}/user",
+            auth=(credentials['username'], credentials['access_token'])
+        )
+        if response.status_code == 200:
+            return {"message": "Validation successful"}
+        else:
+            raise Exception("Validation failed")
 
 st.title("PDF and Text File Question Answering with OpenAI")
 
@@ -45,3 +57,22 @@ if uploaded_file is not None:
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
+
+    github_url = st.text_input("GitHub URL:")
+    username = st.text_input("Username:")
+    access_token = st.text_input("Access Token:", type="password")
+
+    if st.button("Validate GitHub"):
+        if github_url and username and access_token:
+            credentials = {
+                "github_url": github_url,
+                "username": username,
+                "access_token": access_token
+            }
+            try:
+                validation_response = validate_github(credentials)
+                st.write(validation_response)
+            except Exception as e:
+                st.error(str(e))
+        else:
+            st.warning("Please fill in all fields.")
