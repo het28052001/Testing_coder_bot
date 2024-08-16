@@ -25,7 +25,7 @@ def query_openai(prompt):
 st.title("PDF and Text File Question Answering with OpenAI")
 st.write("Upload a PDF or text document and ask questions about its content.")
 
-uploaded_file = st.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
+uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
 
 if uploaded_file is not None:
     if uploaded_file.type == "application/pdf":
