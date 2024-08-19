@@ -2,6 +2,11 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+from fastapi import FastAPI
+import uvicorn
+import requests
+
+app = FastAPI()
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -22,6 +27,10 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+@app.post("/get_answer/")
+async def get_answer(prompt: str):
+    return {"answer": query_openai(prompt)}
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
@@ -39,9 +48,14 @@ if uploaded_file is not None:
     if st.button("Get Answer"):
         if question:
             if uploaded_file.type == "application/pdf":
-                answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
+                prompt = f"{pdf_text}\n\nQuestion: {question}"
             elif uploaded_file.type == "text/plain":
-                answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+                prompt = f"{text_content}\n\nQuestion: {question}"
+            response = requests.post("http://127.0.0.1:8000/get_answer/", json={"prompt": prompt})
+            answer = response.json().get("answer")
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
