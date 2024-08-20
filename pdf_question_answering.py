@@ -1,3 +1,7 @@
+The original code is a Streamlit application for PDF and text file question answering using OpenAI, while the new code is a React component for a dashboard configuration with input fields for GitHub URL, access token, and username. Since the functionalities of the new file do not integrate with the original code and are unrelated to its purpose, no changes are necessary to the original code.
+
+Here is the original code as it is:
+
 import streamlit as st
 import PyPDF2
 import openai
