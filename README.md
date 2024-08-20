@@ -20,7 +20,7 @@ To set up the project, follow these steps:
 
 3. Install the required packages:
    ```bash
-   pip install -r requirements.txt
+   pip install psutil numpy pandas
    ```
 
 4. Run the Streamlit application:

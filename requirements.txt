@@ -2,3 +2,6 @@ streamlit
 langchain
 openai
 faiss-cpu
+psutil
+numpy
+pandas
