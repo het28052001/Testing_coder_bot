@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+import requests
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -45,3 +46,22 @@ if uploaded_file is not None:
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
+
+# New functionality for GitHub credentials validation
+st.title("GitHub Credentials Validator")
+
+repo_url = st.text_input("GitHub Repo URL")
+access_token = st.text_input("GitHub Access Token", type="password")
+username = st.text_input("GitHub Username")
+
+if st.button("Validate"):
+    response = requests.post("http://localhost:8000/validate_credentials/", json={
+        "repo_url": repo_url,
+        "access_token": access_token,
+        "username": username
+    })
+    
+    if response.status_code == 200:
+        st.success("Credentials are valid!")
+    else:
+        st.error("Invalid credentials!")
