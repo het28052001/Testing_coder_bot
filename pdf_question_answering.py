@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+from bs4 import BeautifulSoup
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -14,6 +15,10 @@ def load_text(file):
     text = file.read().decode("utf-8")
     return text
 
+def load_html(file):
+    soup = BeautifulSoup(file.read(), 'html.parser')
+    return soup.get_text()
+
 def query_openai(prompt):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     response = openai.ChatCompletion.create(
@@ -22,9 +27,9 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
-st.title("PDF and Text File Question Answering with OpenAI")
+st.title("PDF, Text, and HTML File Question Answering with OpenAI")
 
-uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
+uploaded_file = st.sidebar.file_uploader("Choose a PDF, text, or HTML file", type=["pdf", "txt", "html"])
 
 if uploaded_file is not None:
     if uploaded_file.type == "application/pdf":
@@ -33,6 +38,9 @@ if uploaded_file is not None:
     elif uploaded_file.type == "text/plain":
         text_content = load_text(uploaded_file)
         st.write("Document Content:", text_content)
+    elif uploaded_file.type == "text/html":
+        html_content = load_html(uploaded_file)
+        st.write("Document Content:", html_content)
 
     question = st.text_input("Ask a question about the document content:")
     
@@ -42,6 +50,8 @@ if uploaded_file is not None:
                 answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
             elif uploaded_file.type == "text/plain":
                 answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+            elif uploaded_file.type == "text/html":
+                answer = query_openai(f"{html_content}\n\nQuestion: {question}")
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
