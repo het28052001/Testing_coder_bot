@@ -22,9 +22,24 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def load_html(file):
+    with open(file, 'r', encoding='utf-8') as f:
+        return f.read()
+
+def display_html(file):
+    html_content = load_html(file)
+    st.components.v1.html(html_content, height=600)
+
+def upload_html_file():
+    uploaded_file = st.file_uploader("Upload an HTML file", type=["html"])
+    if uploaded_file is not None:
+        with open(os.path.join("tempDir", uploaded_file.name), "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        display_html(os.path.join("tempDir", uploaded_file.name))
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
-uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
+uploaded_file = st.sidebar.file_uploader("Choose a PDF, text, or HTML file", type=["pdf", "txt", "html"])
 
 if uploaded_file is not None:
     if uploaded_file.type == "application/pdf":
@@ -33,6 +48,8 @@ if uploaded_file is not None:
     elif uploaded_file.type == "text/plain":
         text_content = load_text(uploaded_file)
         st.write("Document Content:", text_content)
+    elif uploaded_file.type == "text/html":
+        upload_html_file()
 
     question = st.text_input("Ask a question about the document content:")
     
