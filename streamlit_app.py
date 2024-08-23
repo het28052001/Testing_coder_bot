@@ -1,7 +1,5 @@
 import streamlit as st
-import langchain
-import openai
-import faiss-cpu
+import os
 
 def load_html(file):
     with open(file, 'r', encoding='utf-8') as f:
@@ -17,5 +15,3 @@ def upload_html_file():
         with open(os.path.join("tempDir", uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
         display_html(os.path.join("tempDir", uploaded_file.name))
-
-upload_html_file()
