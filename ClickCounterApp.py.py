@@ -1,4 +1,3 @@
-```python
 import tkinter as tk
 
 class ClickCounterApp:
@@ -20,4 +19,3 @@ class ClickCounterApp:
 root = tk.Tk()
 app = ClickCounterApp(root)
 root.mainloop()
-```
