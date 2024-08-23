@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+from ClickCounterApp import ClickCounterApp
 
 def load_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
