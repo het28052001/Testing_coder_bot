@@ -22,6 +22,9 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def add_numbers(a, b):
+    return a + b
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
