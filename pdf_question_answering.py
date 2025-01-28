@@ -2,6 +2,10 @@ import streamlit as st
 import PyPDF2
 import openai
 import os
+from langchain.document_loaders import PyPDFLoader, TextLoader
+from langchain.chains import RetrievalQA
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
 
 def load_pdf(file):
     """Loads a PDF file and extracts text from it.
@@ -46,6 +50,20 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def langchain_qa(file_content):
+    """Performs question answering using Langchain.
+
+    Args:
+        file_content: The content of the file to perform QA on.
+
+    Returns:
+        str: The answer to the question.
+    """
+    embeddings = OpenAIEmbeddings()
+    vector_store = FAISS.from_texts([file_content], embeddings)
+    qa_chain = RetrievalQA.from_chain_type(llm=openai.ChatCompletion, chain_type="stuff", retriever=vector_store.as_retriever())
+    return qa_chain.run(question)
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
@@ -63,9 +81,9 @@ if uploaded_file is not None:
     if st.button("Get Answer"):
         if question:
             if uploaded_file.type == "application/pdf":
-                answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
+                answer = langchain_qa(pdf_text)
             elif uploaded_file.type == "text/plain":
-                answer = query_openai(f"{text_content}\n\nQuestion: {question}")
+                answer = langchain_qa(text_content)
             st.write("Answer:", answer)
         else:
             st.warning("Please enter a question.")
