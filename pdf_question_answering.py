@@ -4,6 +4,14 @@ import openai
 import os
 
 def load_pdf(file):
+    """Loads a PDF file and extracts its text.
+
+    Args:
+        file: The PDF file to be loaded.
+
+    Returns:
+        str: The extracted text from the PDF.
+    """
     pdf_reader = PyPDF2.PdfReader(file)
     text = ""
     for page in pdf_reader.pages:
@@ -11,10 +19,26 @@ def load_pdf(file):
     return text
 
 def load_text(file):
+    """Loads a text file and reads its content.
+
+    Args:
+        file: The text file to be loaded.
+
+    Returns:
+        str: The content of the text file.
+    """
     text = file.read().decode("utf-8")
     return text
 
 def query_openai(prompt):
+    """Queries the OpenAI API with a given prompt.
+
+    Args:
+        prompt: The prompt to be sent to the OpenAI API.
+
+    Returns:
+        str: The response from the OpenAI API.
+    """
     openai.api_key = os.getenv("OPENAI_API_KEY")
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
