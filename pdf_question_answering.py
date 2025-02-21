@@ -22,6 +22,11 @@ def query_openai(prompt):
     )
     return response.choices[0].message['content']
 
+def rag_pipeline(pdf_text, question):
+    # Here we would implement the RAG pipeline logic
+    # For now, we will just query OpenAI with the PDF text and the question
+    return query_openai(f"{pdf_text}\n\nQuestion: {question}")
+
 st.title("PDF and Text File Question Answering with OpenAI")
 
 uploaded_file = st.sidebar.file_uploader("Choose a PDF or text file", type=["pdf", "txt"])
@@ -39,7 +44,7 @@ if uploaded_file is not None:
     if st.button("Get Answer"):
         if question:
             if uploaded_file.type == "application/pdf":
-                answer = query_openai(f"{pdf_text}\n\nQuestion: {question}")
+                answer = rag_pipeline(pdf_text, question)
             elif uploaded_file.type == "text/plain":
                 answer = query_openai(f"{text_content}\n\nQuestion: {question}")
             st.write("Answer:", answer)
